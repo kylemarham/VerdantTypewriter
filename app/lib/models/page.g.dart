@@ -14,7 +14,7 @@ _$PageImpl _$$PageImplFromJson(Map<String, dynamic> json) => _$PageImpl(
               ?.map((e) => Entry.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      chapter: json['chapter'] as String? ?? "",
+      chapter: _chapterFromJson(json['chapter']),
       priority: (json['priority'] as num?)?.toInt() ?? 0,
     );
 

@@ -20,6 +20,11 @@ import "package:typewriter/widgets/inspector/inspector.dart";
 part "page.freezed.dart";
 part "page.g.dart";
 
+/// Pages stored before chapter support was added have `"chapter": 0` (int).
+/// Guard against that so `Page.fromJson` never crashes on legacy data.
+String _chapterFromJson(dynamic value) =>
+    value is String ? value : "";
+
 @riverpod
 List<Page> pages(Ref ref) {
   return ref.watch(bookProvider).pages;
@@ -155,7 +160,7 @@ class Page with _$Page {
     @JsonKey(name: "name") required String pageName,
     required PageType type,
     @Default([]) List<Entry> entries,
-    @Default("") String chapter,
+    @JsonKey(fromJson: _chapterFromJson) @Default("") String chapter,
     @Default(0) int priority,
   }) = _Page;
 
