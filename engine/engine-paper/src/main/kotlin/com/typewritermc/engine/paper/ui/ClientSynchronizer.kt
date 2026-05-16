@@ -39,8 +39,10 @@ class ClientSynchronizer : KoinComponent {
                 array.add(page)
             }
             ack.sendAckData(array.toString())
+            return
         } else if (data == "extensions") {
             ack.sendAckData(extensionJson.toString())
+            return
         }
 
         ack.sendAckData("No data found")
