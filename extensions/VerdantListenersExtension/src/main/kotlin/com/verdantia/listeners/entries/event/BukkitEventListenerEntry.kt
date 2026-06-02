@@ -326,14 +326,20 @@ class BukkitEventListenerRegistry : Initializable, Listener, KoinComponent {
         }
     }
 
+    // #266: factName lookups need to support both the entry ID (`fact-foo-bar`)
+    // and the human-readable entry NAME (`foo_bar`) — most authored pages
+    // reference facts by NAME, which Query.findById() can't resolve. Mirrors
+    // the upstream TypewriterDsl pattern (findById ?: findByName).
     private fun readFactValue(player: Player, factId: String): Int {
-        val entry = Query.findById<com.typewritermc.engine.paper.entry.entries.ReadableFactEntry>(factId) ?: return 0
+        val klass = com.typewritermc.engine.paper.entry.entries.ReadableFactEntry::class
+        val entry = (Query.findById(klass, factId) ?: Query.findByName(klass, factId)) ?: return 0
         return entry.readForPlayersGroup(player).value
     }
 
     private fun writeFactValue(player: Player, factId: String, value: Int) {
-        val entry = Query.findById<com.typewritermc.engine.paper.entry.entries.WritableFactEntry>(factId)
-            ?: error("Fact '$factId' is not writable or not found")
+        val klass = com.typewritermc.engine.paper.entry.entries.WritableFactEntry::class
+        val entry = (Query.findById(klass, factId) ?: Query.findByName(klass, factId))
+            ?: error("Fact '$factId' is not writable or not found (looked up by id and by name)")
         entry.write(player, value)
     }
 
